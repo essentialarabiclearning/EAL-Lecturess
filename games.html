@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Essential Arabic Learning — Games</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#1B5E3F; --green-deep:#123F2A; --gold:#C6A24D; --gold-soft:#E4DCC8;
+    --paper:#FBF8F1; --card:#FFFFFF; --ink:#2A2A28; --ink-soft:#6B655A;
+    --shadow: 0 1px 2px rgba(30,25,10,.04), 0 8px 24px rgba(30,25,10,.07);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(198,162,77,.08), transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(27,94,63,.06), transparent 45%);
+    font-family:'Inter',sans-serif; color:var(--ink); min-height:100vh;
+    padding:0 0 60px;
+    display:flex; flex-direction:column;
+  }
+  .shell{max-width:800px;margin:0 auto;padding:0 20px;width:100%;flex:1;display:flex;flex-direction:column;}
+  .main-center{flex:1;display:flex;flex-direction:column;justify-content:center;}
+
+  .navbar{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--card);box-shadow:var(--shadow);
+    padding:12px 20px;margin-bottom:6px;
+  }
+  .navbar .brand span{font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--green-deep);font-size:15px;}
+  .navbar-links{display:flex;align-items:center;gap:16px;position:relative;}
+  .navbar-hamburger{
+    display:none;background:none;border:none;font-size:20px;color:var(--green-deep);
+    cursor:pointer;padding:2px 4px;
+  }
+  .navbar-dropdown{display:flex;align-items:center;gap:16px;}
+  @media (max-width:600px){
+    .navbar-hamburger{display:block;}
+    .navbar-dropdown{
+      display:none;position:absolute;top:calc(100% + 8px);right:0;
+      flex-direction:column;align-items:flex-start;gap:2px;
+      background:var(--card);box-shadow:var(--shadow);border-radius:10px;
+      padding:10px 6px;min-width:150px;z-index:50;
+      border:1px solid rgba(27,94,63,.08);
+    }
+    .navbar-dropdown.open{display:flex;}
+    .navbar-dropdown a, .navbar-dropdown button.lang-toggle{
+      width:100%;padding:9px 12px;border-radius:6px;text-align:left;
+    }
+    .navbar-dropdown a:hover, .navbar-dropdown button.lang-toggle:hover{background:var(--gold-soft);text-decoration:none;}
+    html[dir="rtl"] .navbar-dropdown{right:auto;left:0;}
+    html[dir="rtl"] .navbar-dropdown a, html[dir="rtl"] .navbar-dropdown button.lang-toggle{text-align:right;}
+  }
+  .navbar a{color:var(--green-deep);text-decoration:none;font-size:12.5px;font-weight:700;}
+  .navbar a:hover{text-decoration:underline;}
+  .lang-toggle{
+    background:var(--gold-soft);color:var(--green-deep);border:none;
+    padding:6px 14px;border-radius:20px;font-size:12.5px;font-weight:800;
+    cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s ease;
+  }
+  .lang-toggle:hover{background:var(--gold);color:#fff;}
+
+  .hub-heading{text-align:center;margin:30px 0 22px;}
+  .hub-badge{
+    display:inline-block;background:var(--gold-soft);color:var(--green-deep);
+    font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;
+    padding:6px 16px;border-radius:20px;margin-bottom:12px;
+  }
+  .hub-heading h1{
+    font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--green-deep);margin:0 0 8px;
+  }
+  .hub-heading p{font-size:14px;color:var(--ink-soft);margin:0;}
+
+  .carousel{display:flex;align-items:center;gap:14px;}
+  .carousel-arrow{
+    flex:none;width:44px;height:44px;border-radius:50%;border:1.5px solid var(--gold-soft);
+    background:var(--card);box-shadow:var(--shadow);color:var(--green-deep);font-size:18px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .carousel-arrow:hover{background:var(--gold-soft);}
+  .carousel-arrow:active{transform:scale(.94);}
+
+  .game-card{
+    flex:1;background:var(--card);border-radius:16px;box-shadow:var(--shadow);
+    border:1px solid rgba(27,94,63,.08);padding:40px 30px;text-align:center;
+    min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .game-card.locked{opacity:.85;}
+  .game-icon{font-size:56px;margin-bottom:14px;}
+  .game-icon.locked-icon{filter:grayscale(1);opacity:.55;}
+  .game-status-badge{
+    display:inline-block;font-size:10.5px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.8px;padding:5px 14px;border-radius:20px;margin-bottom:14px;
+  }
+  .game-status-badge.new{background:var(--gold-soft);color:var(--green-deep);}
+  .game-status-badge.soon{background:#EFEDE7;color:var(--ink-soft);}
+  .game-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--green-deep);margin:0 0 8px;}
+  .game-desc{font-size:13.5px;color:var(--ink-soft);max-width:360px;line-height:1.7;margin:0 0 22px;}
+  .game-play-btn{
+    background:var(--green);color:#fff;border:none;border-radius:10px;
+    padding:12px 30px;font-size:14px;font-weight:800;cursor:pointer;
+    font-family:'Inter',sans-serif;text-decoration:none;display:inline-block;
+    transition:background .15s ease;
+  }
+  .game-play-btn:hover{background:var(--green-deep);}
+  .game-play-btn.disabled{
+    background:#DDD8CB;color:#9A9384;cursor:not-allowed;pointer-events:none;
+  }
+
+  .carousel-dots{display:flex;justify-content:center;gap:8px;margin-top:20px;}
+  .carousel-dots button{
+    width:8px;height:8px;border-radius:50%;background:var(--gold-soft);border:none;
+    cursor:pointer;padding:0;transition:background .15s ease, transform .15s ease;
+  }
+  .carousel-dots button.active{background:var(--green);transform:scale(1.3);}
+
+  .footer-contact{
+    text-align:center;margin-top:34px;padding:20px;
+    background:var(--card);border-radius:14px;box-shadow:var(--shadow);
+    border:1px solid rgba(27,94,63,.08);
+  }
+  .footer-tag{
+    display:inline-block;background:var(--gold-soft);color:var(--green-deep);
+    font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;
+    padding:4px 10px;border-radius:6px;margin-bottom:12px;
+  }
+  .footer-links{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-bottom:10px;direction:ltr;}
+  .footer-links a{color:var(--green-deep);font-size:13px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:7px;direction:ltr;unicode-bidi:isolate;}
+  .footer-links a:hover{text-decoration:underline;}
+  .footer-links svg{flex:none;}
+  .footer-note{text-align:center;font-size:11.5px;color:var(--ink-soft);margin:0;}
+
+  html[dir="rtl"] body{font-family:'Amiri',serif;}
+  html[dir="rtl"] .navbar .brand span{font-family:'Amiri',serif;}
+  html[dir="rtl"] .hub-heading h1{font-family:'Amiri',serif;font-size:30px;}
+  html[dir="rtl"] .hub-heading p{font-family:'Amiri',serif;font-size:16px;}
+  html[dir="rtl"] .game-title{font-family:'Amiri',serif;font-size:24px;}
+  html[dir="rtl"] .game-desc{font-family:'Amiri',serif;font-size:15px;line-height:2;}
+  html[dir="rtl"] .footer-note{font-family:'Amiri',serif;font-size:13px;}
+
+  @media (max-width:640px){
+    .game-card{padding:30px 18px;min-height:280px;}
+    .carousel-arrow{width:38px;height:38px;font-size:16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="navbar">
+    <div class="brand">
+      <span>Essential Arabic Learning</span>
+    </div>
+    <div class="navbar-links">
+      <a href="index.html" data-key="navHome">Home</a>
+      <button class="navbar-hamburger" id="navHamburger" aria-label="Menu" type="button">&#9776;</button>
+      <div class="navbar-dropdown" id="navDropdown">
+        <a href="about.html" data-key="navAbout">About</a>
+        <button class="lang-toggle" id="langToggle" type="button">العربية</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-center">
+    <div class="hub-heading">
+      <div class="hub-badge" data-key="hubBadge">Learning Games</div>
+      <h1 data-key="hubTitle">Choose a Game</h1>
+      <p data-key="hubDesc">Browse with the arrows and play — complete games to earn a certificate.</p>
+    </div>
+
+    <div class="carousel">
+      <button class="carousel-arrow" id="prevBtn" aria-label="Previous game" type="button">&#9664;</button>
+      <div id="gameCard"></div>
+      <button class="carousel-arrow" id="nextBtn" aria-label="Next game" type="button">&#9654;</button>
+    </div>
+
+    <div class="carousel-dots" id="carouselDots"></div>
+  </div>
+
+  <div class="footer-contact">
+    <div class="footer-tag" data-key="footerTag">Online Platform</div>
+    <div class="footer-links">
+      <a href="https://wa.me/923399034106" target="_blank" rel="noopener">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="#25D366"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.8a8.1 8.1 0 0 1 5.75 2.38 8.08 8.08 0 0 1 2.38 5.73c0 4.48-3.65 8.12-8.14 8.12a8.1 8.1 0 0 1-4.13-1.13l-.3-.17-3.12.82.83-3.04-.19-.31a8.07 8.07 0 0 1-1.24-4.32c0-4.48 3.65-8.13 8.16-8.13m-4.5 4.6c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.02s.87 2.34 1 2.5c.11.16 1.7 2.6 4.15 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.43-.58 1.63-1.15.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28-.24-.13-1.43-.7-1.65-.78-.22-.08-.38-.13-.55.13-.16.24-.62.78-.77.95-.14.16-.28.18-.52.06-.24-.13-1.02-.38-1.94-1.2-.72-.63-1.2-1.42-1.35-1.66-.14-.24-.02-.37.11-.5.11-.11.24-.28.37-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.13-.55-1.33-.76-1.82-.2-.48-.4-.4-.55-.41-.14 0-.3-.01-.46-.01Z"></path></svg>
+        WhatsApp: +92 339 9034106
+      </a>
+      <a href="mailto:essentialarabiclearning@gmail.com">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1B5E3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m2 7 10 6 10-6"></path></svg>
+        essentialarabiclearning@gmail.com
+      </a>
+    </div>
+    <p class="footer-note" data-key="footerNote">Essential Arabic Learning — for any issues or questions, please reach out to us above.</p>
+  </div>
+</div>
+
+<script>
+/* ---------- Games catalog ---------- */
+/* Only "daily-challenge" is real right now. The rest are locked slots so
+   students can see more games are coming, without being able to open them. */
+const GAMES = [
+  {
+    id: "daily-challenge",
+    icon: "🔥",
+    locked: false,
+    href: "daily-challenge.html",
+    titleKey: "gameDailyTitle",
+    descKey: "gameDailyDesc"
+  },
+  {
+    id: "word-builder",
+    icon: "🧩",
+    locked: true,
+    titleKey: "gameWordBuilderTitle",
+    descKey: "gameComingSoonDesc"
+  },
+  {
+    id: "memory-match",
+    icon: "🃏",
+    locked: true,
+    titleKey: "gameMemoryTitle",
+    descKey: "gameComingSoonDesc"
+  },
+  {
+    id: "listen-choose",
+    icon: "🎧",
+    locked: true,
+    titleKey: "gameListenTitle",
+    descKey: "gameComingSoonDesc"
+  }
+];
+
+let current = 0;
+
+const translations = {
+  en: {
+    navHome: "Home", navAbout: "About",
+    hubBadge: "Learning Games",
+    hubTitle: "Choose a Game",
+    hubDesc: "Browse with the arrows and play — complete games to earn a certificate.",
+    footerTag: "Online Platform",
+    footerNote: "Essential Arabic Learning — for any issues or questions, please reach out to us above.",
+    gameDailyTitle: "Daily Challenge",
+    gameDailyDesc: "5 new Arabic words every day. Build your streak and test yourself.",
+    gameWordBuilderTitle: "Word Builder",
+    gameMemoryTitle: "Memory Match",
+    gameListenTitle: "Listen & Choose",
+    gameComingSoonDesc: "This game is being built. Check back soon!",
+    playBtn: "Play",
+    comingSoonBtn: "Coming Soon",
+    newBadge: "New",
+    soonBadge: "Coming Soon"
+  },
+  ar: {
+    navHome: "الرئيسية", navAbout: "من نحن",
+    hubBadge: "ألعاب تعليمية",
+    hubTitle: "اختر لعبة",
+    hubDesc: "تصفح باستخدام الأسهم والعب — أكمل الألعاب واحصل على شهادة.",
+    footerTag: "منصة إلكترونية",
+    footerNote: "إسنشيال أرابيك ليرننج — لأي استفسار أو مشكلة، يرجى التواصل معنا عبر الوسائل أعلاه.",
+    gameDailyTitle: "التحدي اليومي",
+    gameDailyDesc: "خمس كلمات عربية جديدة كل يوم. حافظ على سلسلتك واختبر نفسك.",
+    gameWordBuilderTitle: "بناء الكلمات",
+    gameMemoryTitle: "لعبة الذاكرة",
+    gameListenTitle: "استمع واختر",
+    gameComingSoonDesc: "هذه اللعبة قيد الإعداد. تابعنا قريبًا!",
+    playBtn: "العب",
+    comingSoonBtn: "قريبًا",
+    newBadge: "جديد",
+    soonBadge: "قريبًا"
+  }
+};
+
+let lang = localStorage.getItem('eal_lang') || 'en';
+const langToggle = document.getElementById('langToggle');
+const gameCard = document.getElementById('gameCard');
+const dotsWrap = document.getElementById('carouselDots');
+
+function renderDots(){
+  dotsWrap.innerHTML = '';
+  GAMES.forEach((g, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.setAttribute('aria-label', 'Go to game ' + (i + 1));
+    if(i === current) dot.classList.add('active');
+    dot.addEventListener('click', () => { current = i; render(); });
+    dotsWrap.appendChild(dot);
+  });
+}
+
+function render(){
+  const g = GAMES[current];
+  const t = translations[lang];
+
+  const badgeClass = g.locked ? 'soon' : 'new';
+  const badgeText = g.locked ? t.soonBadge : t.newBadge;
+  const btnHtml = g.locked
+    ? `<span class="game-play-btn disabled">${t.comingSoonBtn}</span>`
+    : `<a class="game-play-btn" href="${g.href}" target="_blank" rel="noopener">${t.playBtn}</a>`;
+
+  gameCard.innerHTML = `
+    <div class="game-card ${g.locked ? 'locked' : ''}">
+      <div class="game-icon ${g.locked ? 'locked-icon' : ''}">${g.icon}</div>
+      <div class="game-status-badge ${badgeClass}">${badgeText}</div>
+      <h2 class="game-title">${t[g.titleKey]}</h2>
+      <p class="game-desc">${t[g.descKey]}</p>
+      ${btnHtml}
+    </div>
+  `;
+  renderDots();
+}
+
+function goPrev(){
+  current = (current - 1 + GAMES.length) % GAMES.length;
+  render();
+}
+function goNext(){
+  current = (current + 1) % GAMES.length;
+  render();
+}
+
+document.getElementById('prevBtn').addEventListener('click', goPrev);
+document.getElementById('nextBtn').addEventListener('click', goNext);
+
+function applyLanguage(){
+  document.documentElement.lang = lang === 'ar' ? 'ar' : 'en';
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-key]').forEach(el=>{
+    const key = el.getAttribute('data-key');
+    if(translations[lang][key] !== undefined) el.textContent = translations[lang][key];
+  });
+  langToggle.textContent = lang === 'ar' ? 'English' : 'العربية';
+  render();
+}
+
+langToggle.addEventListener('click', ()=>{
+  lang = lang === 'ar' ? 'en' : 'ar';
+  localStorage.setItem('eal_lang', lang);
+  applyLanguage();
+});
+
+applyLanguage();
+
+(function(){
+  const hamburger = document.getElementById('navHamburger');
+  const dropdown = document.getElementById('navDropdown');
+  if(!hamburger || !dropdown) return;
+  hamburger.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    dropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', (e)=>{
+    if(!dropdown.contains(e.target) && e.target !== hamburger){
+      dropdown.classList.remove('open');
+    }
+  });
+})();
+</script>
+</body>
+</html>
